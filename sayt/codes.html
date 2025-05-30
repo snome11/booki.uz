@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Asaxiy.uz ga o‘xshash sayt</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f4f8;
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+
+  header {
+    background-color: #8f00ff;
+	padding-left: 55px;
+    color: white;
+    padding: 25px 0;
+	weight: 25px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 28px;
+    letter-spacing: 1.2px;
+    box-shadow: 0 3px 8px rgba(0, 119, 255, 0.4);
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+  }
+ 
+  .logo-left {
+    float: left;
+    margin: -10px 10px 0 10px;
+ }
+
+  /* Qidiruv konteyneri */
+  .search-container {
+  position: sticky;
+  top: 10px;
+  z-index: 1001;
+
+  padding-top: 15px;
+  padding-bottom: 15px;
+  max-width: 450px;
+  margin: 0 auto 65px; /* margin pastga */
+  border-radius: 16px;
+  }
+
+  /* Lupa ikonkasi */
+  .search-container svg {
+    position: absolute;
+    top: 50%;
+    left: 18px;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    fill: #8f00ff;
+    pointer-events: none;
+  }
+
+  /* Qidiruv input */
+  #searchInput {
+    width: 100%;
+    padding: 14px 20px 14px 50px; /* ichki chapda lupa uchun joy */
+    font-size: 18px;
+    border-radius: 40px;
+    border: 2px solid #8f00ff;
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 119, 255, 0.15);
+    transition: 0.3s;
+  }
+  #searchInput:focus {
+    box-shadow: 0 0 15px rgba(0, 119, 255, 0.5);
+    border-color: #005ecc;
+  }
+
+  /* Yopishqoq qidiruv ro‘yxati */
+  #searchResults {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1.8px solid #8f00ff;
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+    max-height: 260px;
+    overflow-y: auto;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    z-index: 100;
+    font-size: 16px;
+  }
+
+  #searchResults div {
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  #searchResults div:hover {
+    background-color: #e0f0ff;
+  }
+
+  /* Mahsulotlar ro'yxati */
+  .product-list {
+    max-width: 1200px;
+    margin: 0 auto 50px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+    padding: 0 15px;
+  }
+
+  .product {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+  }
+  .product:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .product img {
+    max-width: 100%;
+    height: 220px;
+    object-fit: contain;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+
+  .product-name {
+    font-weight: 700;
+    font-size: 20px;
+    color: #222;
+    margin-bottom: 12px;
+  }
+  
+  .product-description2 {
+   font-weight: 500;
+    font-size: 18px;
+    color: #222;
+	min-height: 60px;
+	margin-bottom: 9px;
+  }
+
+  .product-price {
+    font-weight: 700;
+	bottom: 5px;
+    font-size: 22px;
+    color: #8f00ff;
+  }
+
+  @media (max-width: 600px) {
+    .product {
+      padding: 15px;
+    }
+    .product img {
+      height: 180px;
+      margin-bottom: 15px;
+    }
+    .product-name {
+      font-size: 18px;
+      min-height: 50px;
+    }
+    .product-price {
+      font-size: 20px;
+    }
+  }
+
+  /* Modal oynasi uchun uslublar */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+  }
+
+ .modal-content {
+    background-color: white;
+    padding: 20px;
+	height: 90%;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content img {
+    width: 40%;
+	height: 100%;
+	margin-right: auto;
+	left: 100px;
+    max-width: 100%; /* Rasmni modalning chap tomoniga joylashtirish */
+    max-height: 100%;
+    border-radius: 12px;
+}
+
+.modal-close {
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #8f00ff;
+    cursor: pointer;
+    z-index: 100;
+    background: none;
+    padding: 2px 8px;
+    border-radius: 50%;
+}
+
+#modalName {
+  position: absolute;
+  top: 2%;
+  left: 45%;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+#modalPrice {
+    position: absolute;
+	font-weight: bold;
+	top: 40%;
+	left: 45%;
+	font-size: 40px;
+    color: #a020f0;
+}
+
+#modalDescription {
+  position: absolute;
+  max-width: 750px;
+  left: 43%;
+  top: 57%;
+  font-size: 10px;
+  color: #444;
+  
+}
+
+#modalDescription2 {
+  position: absolute;
+  top: 110px;
+  left: 45%;
+  font-size: 35px;
+  font-weight: bold;
+  color: #444;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <img src="https://i.postimg.cc/JzMCS37G/photo-2025-05-15-18-22-36.jpg" alt="Tavsif" width="110" height="50" class="logo-left" border-radius="10" > assalomu alaykum                
+</header>
+
+<div class="search-container">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M15.5 14h-.79l-.28-.27a6.471 6.471 0 001.48-5.34C15.04 6.02 12.52 3.5 9.5 3.5S4 6.02 4 9.5 6.52 15.5 9.5 15.5a6.471 6.471 0 005.34-1.48l.27.28v.79l4.25 4.25 1.5-1.5-4.25-4.25zM9.5 14c-2.48 0-4.5-2.02-4.5-4.5S7.02 5 9.5 5 14 7.02 14 9.5 11.98 14 9.5 14z"/>
+  </svg>
+  <input type="search" id="searchInput" placeholder="Qidirish..." aria-label="Mahsulot qidiruvi" autocomplete="off" />
+  <div id="searchResults" style="display:none;"></div>
+</div>
+
+<div class="product-list" id="productList"></div>
+
+<!-- Modal oynasi -->
+<div id="productModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close">&times;</span>
+    <img id="modalImage" src="" alt="Mahsulot rasmi" />
+    <h2 id="modalName"></h2>
+    <p id="modalPrice"></p>
+	<p id="modalDescription" style="font-size: 17px; color: #555;"></p>
+	<p id="modalDescription2"></p>
+  </div>
+</div>
+
+<script>
+  const products = [
+    {
+      id: 1,
+      name: "Ishqqa oshiqman",
+      price: "56 000 so'm",
+      img: "img/oshq.jpg",
+	  description: "Fotih Dumanning Ishqqa oshiqman kitobi — bu sevgi, sadoqat va inson qalbining nozik tuyg‘ularini aks ettiruvchi, o‘quvchini ichki olamiga sayohatga olib boruvchi asar. Bu sevgi haqidagi oddiy, ammo chuqur va samimiy hikoya. Asarda sevgi faqat romantik tuyg‘u sifatida emas, balki insonning ichki dunyosini, qalbini anglash va o‘zini kashf etish jarayoni sifatida tasvirlanadi. Fotih Duman bu kitobida o‘quvchini sevgi orqali hayotning asl ma'nosini topishga undaydi.",
+	  description2: "Fotih Duman"
+    },
+    {
+      id: 2,
+      name: "Qora suyaklar",
+      price: "65 000 so'm",
+      img: "img/suyak.jpg",
+	  description: "Sherbek Bobonor o‘g‘li tomonidan yozilgan Qora suyaklar asari zamonaviy o‘zbek jamiyatidagi kitobxonlik madaniyati, intellektual qadriyatlar va ijtimoiy ong masalalarini tanqidiy yondashuvda yoritadi. Asarda muallif kitobga bo‘lgan munosabat, uni qadrlash darajasi va jamiyatdagi intellektual muhitni chuqur tahlil qiladi. Kitobda kitob o‘qishning qadrsizlanishi, kitobxonlarning stereotiplarga duch kelishi va kitob do‘konlaridagi savodsizlik kabi muammolar ko‘tariladi.",
+	  description2: "Sherbek Bobonor o'g'li"
+    },
+    {
+      id: 3,
+      name: "Muqaddima",
+      price: "68 000 so'm",
+      img: "img/m.jpg",
+	  description: "Muqaddima – bu tarixshunoslik, sotsiologiya, iqtisod, siyosatshunoslik va madaniyat nazariyasini o‘z ichiga olgan buyuk ilmiy asar bo‘lib, mashhur arab olimi Ibn Xaldun tomonidan yozilgan. Asar tarixiy jarayonlarni tahlil qilishda ilmiy metodlarni qo‘llagan holda jamiyatlarning paydo bo‘lishi, rivojlanishi va tanazzulga uchrashi jarayonlarini chuqur o‘rganadi. “Muqaddima” faqatgina tarixiy faktlarni emas, balki insoniyat jamiyatining ichki qonuniyatlarini tushunishga urinadi. Bu asar zamonaviy ijtimoiy fanlar uchun tamal toshi hisoblanadi.",
+	  description2: "Ibn Haldun"
+    },
+    {
+      id: 4,
+      name: "Muqaddima 2",
+      price: "105 000 so'm",
+      img: "img/m2.jpg",
+	  description: "Ibn Xaldunning Muqaddima 2 - kitobi davlatlar va jamiyatlarning paydo bo‘lishi, kuchayishi va inqirozga yuz tutishini tahlil qiladi. U qabilaviy birdamlik, siyosiy hokimiyatning tabiati va hukmdorlar o‘rtasidagi almashinuv jarayonlarini chuqur tushuntiradi. Tarixiy tajribaga tayangan holda, sivilizatsiyalarning o‘sishi va qulashining sabablarini ochib beradi. Bu bo‘lim sotsiologiya va siyosatshunoslikka asos bo‘lgan muhim g‘oyalarni o‘z ichiga oladi.",
+	  description2: "Ibn Haldun"
+    },
+    {
+      id: 5,
+      name: "ISHQ",
+      price: "240 000 so'm",
+      img: "img/ishq.jpg",
+	  description: "Fotih Dumanning Ishq kitobi — bu sevgi, inson qalbi va ruhiy izlanishlar haqida chuqur fikrlar bildiruvchi asar. Ushbu kitobda sevgi faqatgina romantik tuyg‘u emas, balki insonning ichki olami, ruhiy holati va hayotga bo‘lgan qarashlarini o‘rganishga qaratilgan. Dumanning uslubi o‘quvchini o‘z ichki dunyosiga sayohatga olib boradi, so‘zlar orqali qalbni titratadi va o‘ylashga undaydi.",
+	  description2: "Fotih Duman"
+    },
+    {
+      id: 6,
+      name: "MEN: bas qil ey nafs",
+      price: "83 000 so'm",
+      img: "https://cdn.flymart.uz/file/hub/file/2024/12/11/2q4W90mEKoZPWebUMa7DKy9ySjH.jpg",
+	  description: "Fotih Dumanning MEN asari insonning ichki olamiga, ruhiy kechinmalariga va o‘zini anglash jarayoniga bag‘ishlangan ta’sirli psixologik roman hisoblanadi. Kitobda bosh qahramonning ichki monologlari, hayotdagi bo‘shliqlar va savollarga javob izlash jarayoni chuqur tarzda tasvirlanadi. Muallif har bir sahifada o‘quvchini o‘z MEN i bilan yuzlashishga, o‘zini tinglashga undaydi. Oddiy til bilan yozilgan bo‘lishiga qaramay, har bir jumla yurakka yetib boradi va o‘ylantiradi. Kitob sevgi, yolg‘izlik, kechirim va insoniy iztiroblarni nihoyatda samimiy va hayotiy tarzda ochib beradi. MEN – bu nafaqat badiiy asar, balki ichki sayohatga boshlovchi ruhiy ko‘zgudir.",
+	  description2: "Fotih Duman"
+    },
+	{
+	id: 7,
+	name: "Yashamoq",
+	price: "83 000 so'm",
+	img: "img/yasha.jpg",
+	description: "Yu Hua ning Yashamoq romani XX asr Xitoyining murakkab tarixiy davrida oddiy odamlarning hayoti va taqdirini tasvirlaydi. Asar bosh qahramoni Fu Guyning oilaviy hayoti orqali inqiloblar, urushlar va siyosiy o‘zgarishlarning inson hayotiga qanday ta’sir qilgani ko‘rsatiladi. Yu Hua bu romanida insonning chidamliligi, umidi va yashash istagi haqida chuqur fikrlar bildiradi. Romanning asosiy mavzusi — hayotning barcha sinovlariga qaramay, insonning oldinga intilishi va o‘z oilasi uchun kurashishda davom etishi. Soddaligi va samimiyligi bilan Yashamoq o‘quvchini hayot haqidagi yangi qarashlarga undaydi.",
+    description2: "Yuy Xua"
+	},
+  {
+    id: 8,
+    name: "ASO: inson unitilganda o'ladi",
+    price: "80 000 so'm",
+    description2: "Fotih Duman",
+    description: "Aso asari ichki ziddiyatlar, ong osti bilan kurash va shaxsiy rivojlanish haqida. Kitobda inson o‘z kechmishlari bilan yuzlasharkan, har bir xatoni saboq sifatida qabul qilishga o‘rganadi. Soddaligi bilan yurakka yaqin, murakkabligi bilan fikrlashga majbur qiladi.",
+    img: "img/aso.jpg"
+  },
+  {
+    id: 9,
+    name: "Lol: har shaxarning o'z egasi bor...",
+    price: "70 000 so'm",
+    description2: "Fotih Duman",
+    description: "Lol – bu kitob inson qalbining sukutdagi faryodidir. Har bir sahifasi o‘quvchini ichki ovozi bilan yuzma-yuz qoldiradi. Tashqi dunyo bilan ichki dunyo o‘rtasidagi chigalliklar, ong va yurak to‘qnashuvi go‘zal ifoda etilgan.",
+    img: "img/lol.jpg"
+  },
+  {
+    id: 10,
+    name: "Oxi: inson o'lur orzular o'lmas",
+    price: "75 000 so'm",
+    description2: "Fotih Duman",
+    description: "Oxi romanida inson o‘zligini izlash, tan olish va kechirish yo‘lida qanday ruhiy sinovlarga duch kelishi yoritiladi. Har bir bobda hayot haqiqatlari nafis badiiyat bilan uyg‘unlashadi. Kitob sizni o‘z fikrlaringiz ichiga sayohatga olib ketadi.",
+    img: "img/oxi.jpg"
+  },
+  {
+    id: 11,
+    name: "Pir: piri turkiston axmad yassaviy qissasi",
+    price: "80 000 so'm",
+    description2: "Fotih Duman",
+    description: "Pir – hayotning sokin, ammo chuqur qatlamlarini ochib beruvchi asar. Ruhiy uyg‘onish, sabr va kechirim mavzulari markazda turadi. Kitob o‘z ichki quvvatingizni kashf etishga undaydi va fikrlash ufqingizni kengaytiradi.",
+    img: "img/pir.jpg"
+  },
+  {
+    id: 12,
+    name: "A'mo: ko'rish uchun ko'z kerak emas...",
+    price: "69 000 so'm",
+    description2: "Fotih Duman",
+    description: "A'mo asari qalb ko‘zining ochilishi, hayotga boshqa nigoh bilan qarashni o‘rgatadi. Bu kitob orqali siz ko‘rmaslik – faqat ko‘z bilan bog‘liq emasligini, balki qalb bilan anglash lozimligini his qilasiz.",
+    img: "img/amo.jpg"
+  },
+  {
+    id: 13,
+    name: "Sir: oshiqlar o'lmas",
+    price: "60 000 so'm",
+    description2: "Fotih Duman",
+    description: "Sir kitobi ichki sirlar, yashirin tuyg‘ular va inson ongining noaniq yo‘llari haqida. Har bir sahifa o‘quvchini o‘z sirlariga qarshi turgizadi va o‘zi bilan halol suhbat qurishga majbur qiladi. Tinch, ammo kuchli ruhiy silkinish bilan yo‘g‘rilgan asar.",
+    img: "img/sir.jpg"
+  },
+  {
+    id: 14,
+    name: "Dam: istambulning afsonaviy oshiqlari",
+    price: "56 000 so'm",
+    description2: "Fotih Duman",
+    description: "Dam – bu ichki sokinlikni, hayotdagi nafas olish zarurligini eslatib turuvchi ruhiy dam olish asari. Kitob ortiqcha shovqindan charchagan qalblar uchun taskin, fikrlarni yig‘ish uchun toza joydir.",
+    img: "img/dam.jpg"
+  }
+  ];
+
+  const searchInput = document.getElementById("searchInput");
+  const searchResults = document.getElementById("searchResults");
+  const productListEl = document.getElementById("productList");
+
+  const modal = document.getElementById("productModal");
+  const modalImage = document.getElementById("modalImage");
+  const modalName = document.getElementById("modalName");
+  const modalPrice = document.getElementById("modalPrice");
+  const modalClose = document.querySelector(".modal-close");
+
+  function displayProducts(items) {
+    productListEl.innerHTML = "";
+    if (items.length === 0) {
+      productListEl.innerHTML = "<p>Hech qanday mahsulot topilmadi.</p>";
+      return;
+    }
+    items.forEach(product => {
+      const productHTML = `
+        <div class="product" data-id="${product.id}">
+          <img src="${product.img}" alt="${product.name}" />
+          <div class="product-name">${product.name}</div>
+		  <div class="product-description2">${product.description2}</div>
+          <div class="product-price">${product.price}</div>
+        </div>
+      `;
+      productListEl.insertAdjacentHTML("beforeend", productHTML);
+    });
+
+    // Har bir mahsulotni bosganda modal ochish
+    document.querySelectorAll('.product').forEach(el => {
+      el.addEventListener('click', () => {
+        const id = parseInt(el.getAttribute('data-id'));
+        const product = products.find(p => p.id === id);
+        if (product) {
+          openModal(product);
+        }
+      });
+    });
+  }
+
+  function displaySearchResults(items) {
+    if (items.length === 0 || searchInput.value.trim() === "") {
+      searchResults.style.display = "none";
+      searchResults.innerHTML = "";
+      return;
+    }
+
+    searchResults.style.display = "block";
+    searchResults.innerHTML = "";
+    items.forEach(product => {
+      const div = document.createElement("div");
+      div.textContent = product.name;
+      div.addEventListener("click", () => {
+        searchInput.value = product.name;
+        searchResults.style.display = "none";
+        // Mahsulotlarni filtrlaymiz
+        const filtered = products.filter(p => p.name.toLowerCase() === product.name.toLowerCase());
+        displayProducts(filtered);
+      });
+      searchResults.appendChild(div);
+    });
+  }
+
+  function openModal(product) {
+    modalImage.src = product.img;
+	
+    modalName.textContent = product.name;
+    modalPrice.textContent = product.price;
+    modal.style.display = "flex";
+	document.getElementById("modalDescription").textContent = product.description || "";
+  modal.style.display = "flex";
+   document.getElementById("modalDescription2").textContent = product.description2 || "";
+  modal.style.display = "flex";
+  }
+
+  modalClose.addEventListener('click',
+() => {
+modal.style.display = "none";
+});
+
+window.addEventListener('click', (e) => {
+if (e.target === modal) {
+modal.style.display = "none";
+}
+});
+
+// Boshida barcha mahsulotlarni ko‘rsatamiz
+displayProducts(products);
+
+searchInput.addEventListener("input", () => {
+const query = searchInput.value.trim().toLowerCase();
+if (query === "") {
+  searchResults.style.display = "none";
+  displayProducts(products);
+  return;
+}
+
+const filtered = products.filter(product =>
+  product.name.toLowerCase().includes(query)
+);
+displaySearchResults(filtered);
+});
+</script>
+
+</body> </html>
+
